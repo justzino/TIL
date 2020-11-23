@@ -1,8 +1,9 @@
+# Concept-of-a-docker
 - 2020-11-23
 
 학교에서 DB 시간에 Docker를 사용하는데 마침 또 CEOS (신촌기반 IT창업 동아리) 에서 백엔드 배포를 docker를 활용해보고자 한다. 이 기회에 Docker 공부를 제대로 해두어 남겨 두고자 한다.
 
-# 도커를 사용하는 이유
+## 도커를 사용하는 이유
 
 - 개발환경의 쉬운 셋팅 (압도적인듯...)
 - 가상화 환경 사용 X
@@ -10,11 +11,11 @@
     - docker : 리눅스의 container 기술을 이용하여 가상화를 하지 않고, 기존의 운영체제 안에서 process만 독립시켜 사용. - os를 띄우지 않으므로 기존의 시스템 자원 공유
 - real machine 과 docker 간의 성능차이가 거의 없다.
 
-# 윈도우 기준 사용
+## 윈도우 기준 사용
 
 - wsl2 사용
 
-# 도커의 개념
+## 도커의 개념
 
 - 운영체제를 설치 하는 것이 아닌, 패키지 관리가 설치(apt-get 등)된 **image**를 가져 온다.
 - docker : docker hub = git : github  와 비슷한 개념 (pull, push 등)
@@ -25,15 +26,15 @@
 - container 안과 밖은 완전히 독립되어 서로 무엇이 깔려있든 사용할 수 없다.
 - 내가 만든 container를 image화 시켜 편하게 이용 가능
 
-# Container 업데이트
+## Container 업데이트
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89b83089-b2e6-4026-b3f0-e9d7d824463d/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/89b83089-b2e6-4026-b3f0-e9d7d824463d/Untitled.png)
+![](./Images/dockerMount.jpg)
 
 `-v` 옵션을 사용해 docker run할 때 이미지만 변경하고 같은 볼륨을 마운트 하는 식으로 사용한다.
 
-# Docker 명령어
+## Docker 명령어
 
-## sudo 빼버리기!
+### sudo 빼버리기!
 
 ```bash
 # docker 명령어는 root권한으로 sudo를 붙여 실행해야 하지만 아래 명령어를 통해 권한 부여
@@ -42,7 +43,7 @@ sudo usermod -aG docker $USER # 현재 접속중인 사용자에게 권한주기
 sudo usermod -aG docker your-user # your-user 사용자에게 권한주기
 ```
 
-## 이미지 관련 명령어
+### 이미지 관련 명령어
 
 ```bash
 # 이미지 확인하기
@@ -58,7 +59,7 @@ docker rmi [OPTIONS] IMAGE [IMAGE...]
 docker rmi ${UBUNTU_IMAGE_ID}
 ```
 
-## 컨테이너 기본 명령어
+### 컨테이너 기본 명령어
 
 ```bash
 # 실행중인 container 목록 확인
@@ -69,7 +70,7 @@ docker ps
 docker ps -a
 ```
 
-## 컨테이너 실행 관련 명령어
+### 컨테이너 실행 관련 명령어
 
 ```bash
 # 이미지를 **컨테이너로 생성**한 뒤 [실행할 파일]을 실행
@@ -124,7 +125,7 @@ $ (ctrl + PQ)   # container를 종료하지 않고 빠져나오기
     - -v /my/own/datadir:/var/lib/mysql : 호스트의 /my/own/datadir 디렉터리를 컨테이너의 /var/lib/mysql 디렉터리에 연결.  
     /my/own/datadir 디렉터리에 파일을 넣으면 컨테이너에서 해당 파일을 읽을 수 있습니다.
 
-## 컨테이너 중지, 삭제, 로그 명령어
+### 컨테이너 중지, 삭제, 로그 명령어
 
 ```bash
 # Container 중지하기 (stop)
@@ -146,16 +147,17 @@ docker logs --tail 10 ${MARIADB_CONTAINER_ID} # 10줄만 확인하기
 docker logs -f ${MARIADB_CONTAINER_ID} # 실시간으로 생성되는 로그 확인하기
 ```
 
-### 참고 자료
+#### 참고 자료
 
 [가장 빨리 만나는 Docker]([http://pyrasis.com/private/2014/11/30/publish-docker-for-the-really-impatient-book](http://pyrasis.com/private/2014/11/30/publish-docker-for-the-really-impatient-book))
 
 [생활코딩]([https://opentutorials.org/course/128/8657](https://opentutorials.org/course/128/8657))
 
-[도커 공식 문서 - 명령어] ([https://docs.docker.com/engine/reference/commandline/docker/](https://docs.docker.com/engine/reference/commandline/docker/)) 
+[도커 공식 문서 - 명령어]([https://docs.docker.com/engine/reference/commandline/docker/](https://docs.docker.com/engine/reference/commandline/docker/)) 
 
 ps. -v 옵션을 보고 문득 혼자 상상의 나래를 펼치며 망상을 했었다... 이를 여기저기 물어보다 깨닫게 된다. 게다가 물어보면 정말 검증 방법까지 알려주시는 감사한 현업자 선배님들...
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41f87cbe-4549-4f86-a5fb-a58b6908d513/KakaoTalk_20201123_233038977_01.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/41f87cbe-4549-4f86-a5fb-a58b6908d513/KakaoTalk_20201123_233038977_01.jpg)
-
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/dc41f71b-4da5-442f-9ac5-a5cb895c4bad/KakaoTalk_20201123_233038977.jpg](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/dc41f71b-4da5-442f-9ac5-a5cb895c4bad/KakaoTalk_20201123_233038977.jpg)
+<p float="left">
+    <img src="./Images/option1.jpg" width="45%" />
+    <img src="./Images/option2.jpg" width="49%" /> 
+</p>
