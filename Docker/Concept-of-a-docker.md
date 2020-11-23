@@ -157,7 +157,7 @@ docker logs -f ${MARIADB_CONTAINER_ID} # 실시간으로 생성되는 로그 확
 
 ps. -v 옵션을 보고 문득 혼자 상상의 나래를 펼치며 망상을 했었다... 이를 여기저기 물어보다 깨닫게 된다. 게다가 물어보면 정말 검증 방법까지 알려주시는 감사한 현업자 선배님들...
 
-<p float="left">
-    <img src="./Images/option1.jpg" width="45%" />
-    <img src="./Images/option2.jpg" width="49%" /> 
+<p float="left" align="middle">
+    <img src="./Images/option1.jpg" width="38%" />
+    <img src="./Images/option2.jpg" width="42%" /> 
 </p>
