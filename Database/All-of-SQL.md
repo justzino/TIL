@@ -26,7 +26,7 @@ Data Control Language
 - 권한 부여, 권한 제거
 - `GRANT`, `REVOKE`
 
-# SQL 명령어 연습
+# SQL 명령어 연습1
 
 
 ### 기본 명령어
@@ -257,11 +257,240 @@ GROUP BY CountryCode, Name WITH ROLLUP;
 ```sql
 SELECT *
 FROM city
-JOIN country ON city
+JOIN country ON city.CountryCode = country.Code;
+
+# city, country, countrylanguage 테이블 3개를 join 하기
+SELECT *
+FROM city
+JOIN country ON city.CountryCode = country.Code
+Join countrylanguage on city.CountryCode = countrylanguage.CountryCode;
+```
+
+# 3. SQL 명령어 연습2
+
+### DB 데이터(Sailor, Reserve, Boat)
+
+<p float="left" align="middle">
+    <img src="Images/db2.png" alt="text" width="35%" />
+    <img src="./Images/db3.png" width="33%" /> 
+    <img src="./Images/db4.png" width="30%" /> 
+</p>
+
+
+
+### 1. DATABASE, TABLE 생성
+
+```sql
+SHOW DATABASES;
+CREATE DATABASE test_db;
+USE test_db;
+
+SHOW TABLES;
+SHOW TABLE STATUS;
+
+CREATE TABLE sailor(
+	  sid int NOT null PRIMARY KEY,
+	  sname varchar(10) NOT null,
+    rating int NOT null,
+    age real NOT null
+);
+
+CREATE TABLE boat(
+	  bid int NOT null PRIMARY KEY,
+	  bname varchar(10) NOT null,
+	  color varchar(10) NOT null
+);
+
+CREATE TABLE reserve(
+  	sid int NOT null,
+    bid int NOT null,
+    day date NOT null,
+    CONSTRAINT PRIMARY KEY(sid, bid, day));
+    
+SHOW TABLES;
+DESC TABLE sailor;
+DESC TABLE boat;
+DESC TABLE reserve;
+```
+
+### 2. TABLE 데이터 삽입
+
+```sql
+INSERT INTO Sailor (sid, sname, rating, age)
+VALUE 	(22, 'Dustin', 7, 45),
+  		(29, 'Brutus', 1, 33),
+	    (31, 'Lubber', 8, 55.5),
+        (32, 'Andy', 8, 25.5),
+        (58, 'Rusty', 10, 35.0),
+        (64, 'Horatio', 7, 35.0),
+        (71, 'Zorba', 10, 16),
+        (74, 'Horatio', 9, 35),
+        (85, 'Art', 3, 25.5),
+        (96, 'Bob', 3, 63.5);
+
+INSERT INTO Reserve (sid, bid, day)
+VALUE 	(22, 101, '1998-10-10'),
+	    (22, 102, '1998-10-10'),
+        (22, 103, '1998-08-10'),
+        (22, 104, '1998-07-10'),
+        (31, 102, '1998-10-11'),
+        (31, 103, '1998-06-11'),
+        (31, 104, '1998-12-11'),
+        (64, 101, '1998-05-09'),
+        (64, 102, '1998-08-09'),
+        (74, 103, '1998-08-09');
+        
+INSERT INTO Boat (bid, bname, color)
+VALUE	(101, 'Interlake', 'blue'),
+		(102, 'Interlake', 'red'),
+        (103, 'Clipper', 'green'),
+        (104, 'Marine', 'red');
+
+UPDATE sailor SET sname = 'Dustin' WHERE sid = 22;
+DELETE sailor FROM sailor WHERE sid = 22;
+
+SELECT * FROM Sailor;
+SELECT * FROM Reserve;
+SELECT * FROM Boat;
+
+SELECT COUNT(*) FROM sailor;
+```
+
+### 3. 기본 질의문
+
+```sql
+# Q3.Lubber에 의해 예약된 배의 색을 구하시오
+SELECT  B.color
+FROM    Boat B, Reserve R, Sailor S
+WHERE   B.bid = R.bid AND R.sid = S.sid AND S.sname = 'Lubber';
+
+# Q17.한날에 서로 다른 두 배를 운행한 사람의 등급에 대한 증가치를 계산하시오.
+SELECT	S.sname, S.rating + 1 AS rating
+FROM    Reserve R1, Reserve R2, Sailor S
+WHERE   R1.day = R2.day AND R1.sid = S.sid
+        AND R2.sid = S.sid AND R1.bid != R2.bid;
+
+#
+SELECT  S1.sname AS name1, S2.sname AS name2
+FROM    Sailor S1, Sailor S2
+WHERE   2*S1.rating = S2.rating-1;
+
+# Q18.이름이 B로 시작해서 B로 끝나고 세 자 이상인 뱃사람의 나이를 구하시오.
+SELECT  S.age
+FROM    Sailor S
+WHERE   S.sname LIKE 'B_%B';
+```
+
+### 4. UNION, INTERSECT, EXCEPT
+
+- 중복제거가 default
+- 중복을 유지하려면 **UNION ALL**, **INTERSECT ALL**, **EXCEPT ALL**
+- **INTERSECT**, **EXCEPT** - MySQL은 지원 안함 (대신 **JOIN** 연산 사용)
+
+```sql
+# Q5.적색 혹은 녹색 배를 예약한 적이 있는 뱃사람의 이름을 구하시오.
+SELECT  S.sname
+FROM    Sailor S, Reserve R, Boat B
+WHERE   (B.color = 'red' or B.color = 'green') AND
+        B.bid = R.bid AND R.sid = S.sid;
+
+SELECT  S.sname
+FROM    Sailor S, Reserve R, Boat B
+WHERE   S.sid = R.sid AND R.bid = B.bid AND B.color = 'Red'
+UNION
+SELECT  S2.sname
+FROM    Sailor S2, Reserve R2, Boat B2
+WHERE   S2.sid = R2.sid AND R2.bid = B2.bid AND B2.color = 'Green';
+
+# Q6.적색과 녹색 배를 둘 다 예약한 적이 있는 뱃사람의 이름을 구하시오.
+SELECT  S.sname
+FROM    Boat B1, Boat B2, Reserve R1, Reserve R2, Sailor S
+WHERE   B1.color = 'red' AND B1.bid = R1.bid
+        AND B2.color = 'green' AND B2.bid = R2.bid
+        AND R1.sid = R2.sid
+        AND R2.sid = S.sid;
+
+SELECT  S.sname
+FROM     Sailor S, Reserve R, Boat B
+WHERE   S.sid = R.sid AND R.bid = B.bid AND B.color = 'Red'
+INTERSECT
+SELECT  S2.sname
+FROM    Sailor S2, Reserve R2, Boat B2
+WHERE   S2.sid = R2.sid AND R2.bid = B2.bid AND B2.color = 'Green'
+
+# Q19.적색은 예약했지만 녹색 배는 예약하지 않은 모든 뱃사람 번호를 구하시오.
+SELECT  R.sid
+FROM    Reserve R, Boat B
+WHERE   R.bid = B.bid AND B.color = 'red'
+EXCEPT
+SELECT  R2.sid
+FROM    Reserve R2, Boat B2
+WHERE   R2.bid = B2.bid AND B2.color = 'green';
+
+# Q20.등급 10을 가지거나 104 배를 예약한 모든 뱃사람의 sid를 구하시오.
+SELECT  S.sid
+FROM    Sailor S
+WHERE   S.rating = 10
+UNION
+SELECT  R.sid
+FROM    Reserve R
+WHERE   R.bid = 104;
+```
+
+### Nested Query(중첩 질의)
+
+- 집합 비교 연산자
+
+```sql
+IN, EXIST**S**, UNIQUE, NOT IN, NOT EXISTS, op ANY, op ALL
+```
+
+```sql
+# Q1.배 번호 103을 예약한 적이 있는 뱃사람의 이름을 구하시오.
+SELECT  S.sname
+FROM    Sailor S, Reserve R
+WHERE   S.sid = R.sid AND R.bid = 103;
+
+SELECT  S.sname
+FROM    Sailor S
+WHERE   S.sid IN (SELECT  R.sid
+                  FROM    Reserve R
+                  WHERE   R.bid = 103);
+
+# IN 과 =ANY 는 동일 / NOT IN 과 <>ALL 은 동일
+SELECT  S.sname
+FROM    Sailor S
+WHERE   S.sid = ANY (SELECT R.sid
+                     FROM    Reserve R
+                     WHERE   R.bid = 103);
+
+SELECT  S.sname
+FROM    Sailor S
+WHERE   EXISTS (SELECT  *
+                FROM    Reserve R
+                WHERE   R.bid = 103 AND R.sid = S.sid);
+
+# Q2.적색 배를 예약한 적이 있는 뱃사람의 이름을 구하시오
+SELECT  S.sname
+FROM    Sailor S
+WHERE   S.sid IN (SELECT    R.sid
+                  FROM      Reserve R
+                  WHERE     R.bid   IN (SELECT  B.bid
+                                        FROM    Boat B
+                                        WHERE   B.color='red'));
+
+# Q21.적색 배를 예약한 적이 없는 뱃사람의 이름을 구하시오
+SELECT  S.sname
+FROM    Sailor S
+WHERE   S.sid   NOT IN (SELECT  R.sid
+                        FROM    Reserve R
+                        WHERE   R.bid IN (SELECT B.bid
+                                          FROM   Boat B
+                                          WHERE  B.color = 'red'));
 ```
 
 ### reference
 
-[이수안컴퓨터연구소 유튜브]([https://www.youtube.com/watch?v=vgIc4ctNFbc](https://www.youtube.com/watch?v=vgIc4ctNFbc))
+[이수안컴퓨터연구소 유튜브](https://www.youtube.com/watch?v=vgIc4ctNFbc)
 
 데이터베이스 시스템 3판_Raghu Ramakrishnan
