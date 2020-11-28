@@ -418,6 +418,13 @@ SELECT  S2.sname
 FROM    Sailor S2, Reserve R2, Boat B2
 WHERE   S2.sid = R2.sid AND R2.bid = B2.bid AND B2.color = 'Green'
 
+SELECT	S.sname
+FROM	Sailor S, Reserve R, Boat B
+WHERE	S.sid = R.sid AND R.bid = B.bid AND B.color = 'red'
+		AND S.sid IN ( SELECT 	S2.sid
+					   FROM		Sailor S2, Reserve R2, Boat B2
+                       WHERE	S2.sid = R2.sid AND R2.bid = B2.bid AND B2.color = 'green');
+
 # Q19.적색은 예약했지만 녹색 배는 예약하지 않은 모든 뱃사람 번호를 구하시오.
 SELECT  R.sid
 FROM    Reserve R, Boat B
